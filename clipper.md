@@ -1,6 +1,6 @@
 # Clipper: A Low-Latency Online Prediction Serving System (2017)
 
-A **general-purpose** **low-latency** prediction serving system interposing between apps and ML frameworks
+A **general-purpose** prediction serving system interposing between **end-user applications** and **ML frameworks**
 
 ![alt text](image.png)
 
@@ -8,54 +8,57 @@ A **general-purpose** **low-latency** prediction serving system interposing betw
 
 ML is being used with different ML frameworks and in many applications. But, most ML frameworks and systems only address model **training** and not **deployment**.
 
-ML develoeprs should deal with deploying their models under differnet frameworks and for different scalings. So, **deployment**, **optimization** and **maintenance** of ML services is difficult and error-prone.
+ML develoeprs should deal with deploying their models under differnet **frameworks**, **models**, and for different **scalings**.
 
-Domain:
+### targeted applications
 
 - object recongnition
 - speech recongnition
 
+### challenges
+
+- Complexity of deployment (model abstraction layer)
+- Inference latency and throughput (model abstraction layer)
+- Model selection and accuracy (model selection layer)
+
 ## solution
 
 - simplify model deployment by **layered modular architecture**
-- reduce and bound latency, and improve throughput, accuracy, and robustness by **caching, batching, and adaptive (online) model selection**
+- reduce and bound latency and improve throughput by Model Abstraction Layer (caching,batching)
+- improve accuracy, and robustness by Model Selection Layer (adaptive (online) model selection)
 
-Also, introduces **caching**, **adaptive batching** and **adaptive model selection** (+online learning (user feedback) +model composition) which improves **latency**, **throughput**, **accuracy**, and **robustness** without change in ML frameworks.
+### formulation
 
-Dynmically trade-off accuracy and latency under heavy query load
+caching: at model selection layer (LRU)
 
-## formulation
+batch: use SLO to increase latency in exchange for substantially improved throughput
 
-batch: allowing users to specify a latency objective -> to maximize throughput (with high utilization)
+- Dynamic Batch Size: AIMD method
+- Delayed Batching: Nagle's algorithm
 
-## deisng
+model container: Prediction Interface
 
-The main contributinos of Clipper:
+scaling: model container replica scaling
 
-### Two layers
+single model selection policy: bandit algorithms (Exp3) => minimal computational overhead in noisy feedback
 
-- Model abstraction layer: API for using different ML frameworks -> brings trasparency between applications and models
-- Model selection layer: sits above the model abstraction layer -> dynamically selects and combines models
+ensemble model selection policy: linear ensemble method using bandit algorithms (Exp4)
 
-### Optimizations (latency, throughput)
+Robust Predictions: confidence score threshold
 
-- caches per-model basis -> reduce latency
-- adaptive bathcing -> improve throughput
+Straggler Mitigation: simple best-effort strategy (based on late prediction is worse than inaccurate one) using latency deadline (SLO) and invokes subset of ensemble models
 
-### Model selection layer (accuracy, robustenss, latency)
-
-- bandit + ensemble for each user/session -> improve accuracy (and robustness)
-- straggler mitigation -> improve latency
+Contexualization: model selection layre initiates multiple unique states to keep the users's online feedback
 
 ## implementation
 
 - with Rust
 - support for frameworks:
   - Apache Spark MLLib
-    - Scikit-Learn
-    - Caffe
-    - TensorFlow
-    - HTK
+  - Scikit-Learn
+  - Caffe
+  - TensorFlow
+  - HTK
 
 ## evaluate
 
@@ -102,7 +105,3 @@ Result:
 - Interactive Latency = < 100ms
 - evaluate Clipper using four **common ML benchmark datasets**
 - substantial latencies = 50-100ms
-- when predictions can influence future queries (like content recommendation):
-  - offline evaluation can be heavily biased
-  - A/B testing is statistically inefficient
-- Unless otherwise noted -> can be used to say something generally is true unless specified
