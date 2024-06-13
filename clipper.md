@@ -60,7 +60,7 @@ Contexualization: model selection layre initiates multiple unique states to keep
   - TensorFlow
   - HTK
 
-## evaluate
+## evaluation
 
 Object Recognition datasets:
 
