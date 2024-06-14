@@ -15,3 +15,9 @@ one-line description
 ### Design & Implementation
 
 ## Evaluation
+
+### Setup
+
+### Baselines
+
+### Performance Metric

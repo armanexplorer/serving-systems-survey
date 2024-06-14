@@ -88,8 +88,9 @@ For a particular query i, a configuration c is on the Pareto boundary if there d
 
 ## Evaluation
 
-Setup on 24 node Azure cluster
+### Setup
 
+on 24 node Azure cluster
 Each experiment is run 5 times, and the median result reported.
 
 ### Baselines
