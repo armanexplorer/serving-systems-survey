@@ -44,8 +44,13 @@ Sustainted high utilization: Funnel adequete work to each accelerator + Group ri
 
 Goal: attain high execution efficiency on GPU clusters while serving video analysis requests within a specified latency SLO.
 
-Integer Programming to co-locate sessions
-Used CPLEX to solve our Integer Programming problem (incldues some non-linear constraints) -> expensive => go for greedy
+- squishy bin-packing to co-locate residual workloads of sessions
+  - Integer Programming -> expensive
+    - Used CPLEX to solve (incldues some non-linear constraints)
+  - greedy formulatinos -> worked!
+
+- split latencies for complex queries
+  - solved by DP in quadratic time
 
 ## Solution
 
@@ -68,13 +73,13 @@ We need:
 ### Design & Implementation
 
 Management Plane: ingest and deploy models by developers
-control Plane: via global scheduler (interacts with underlying cluster resource manager) -> resource allocation and scheduling
+Control Plane: via global scheduler (interacts with underlying cluster resource manager) -> resource allocation and scheduling
 Data Plane: Nexus runtime -> Nexus library instances + backend moduels -> dispatch and executes requests
 
 #### Management Plane
 
-- Store moedls in model database
-- sample dataset to produce batching profile (latency and memory for each batch size)
+- Store models in model database
+- Sample dataset to produce batching profile (Latency and Memory for each batch size)
 
 #### Control Plane
 
@@ -88,16 +93,39 @@ Data Plane: Nexus runtime -> Nexus library instances + backend moduels -> dispat
 
 - Application instance receives the request and send DNN infernece through Nexus Libaray API
 - Nexus library (on frontend) checks routing table to find backend and dispatch the request accordingly
-- Application pakcs the results to conclude the query result
+- Application packs the results to conclude the query result
+
+---
 
 Schedule -> (models + arrival rate + SLO + batching profiles) => number of GPUs for each sesssion + co-located (bin-pack) remained workload
 
 Containerzied system
 10k C++ code
 
+Design Components
+
+- Batch-aware scheduling
+  - schedule individual DNN tasks
+    - large sessions
+    - residual workload
+      - Integer Programming -> expensive
+      - Greedy
+  - schedule complex queires => output latency splits using DP
+
+- Batch-aware dispatch
+  - Overlapping CPU and GPU computation
+  - GPU multiplexing
+  - Prefix Batching
+  - Adaptive batching
+
 ## Evaluation
 
+- Design varying complete experiments (e.g., single application vs multi application) to show perfomrance improve than baselines, and dive into the effect of the components
+- Do micro benchmarks to show the robustness of Nexus components against varying in key design parameters
+
 ### Setup
+
+- 16-100 GPU clusters with single or different applications
 
 ### Baselines
 
@@ -106,4 +134,4 @@ Containerzied system
 
 ### Performance Metric
 
-Maximal request rate (throughput) processed by serving system
+Throughput: The **maximum rate of queries** that Nexus can process such that **99% of them are served within their latency SLOs**
