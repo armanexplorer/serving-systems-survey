@@ -114,7 +114,7 @@ Design Components
 
 - Batch-aware dispatch
   - Overlapping CPU and GPU computation
-  - GPU multiplexing
+  - GPU multiplexing (Temporal not Spatial)
   - Prefix Batching
   - Adaptive batching
 
