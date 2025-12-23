@@ -49,12 +49,6 @@ GrandSLAm has static SLO partitioning => cannot adopt to change in workload of d
 me:
 what is the relation between making a app with different execution paths to multiple applications! and then we actually are using same infrastructure for different applications
 
-`lscpu` -> Intel(R) Xeon(R) Gold 6126 CPU @ 2.60GHz
-`lspci -v | grep -A 10 VGA` + `nvidia-smi` -> Quadro RTX 6000
-Quadro RTX 6000, 24212MiB
-Quadro RTX 6000, 24GB -> $0.50 / hour
-Google Custom machine type (2vCPU + 8GB Ram ~= n1-standard-2) -> $0.1 / hour
-
 Kubernetes and SageMaker -> use feedback control scaling -> based on customized rules
 
 - problem: long provisioning delay -> needs over-provisioning
@@ -81,7 +75,3 @@ application servers
 
 I should set a threshold for latency to cut off the too long running inference requests (make experiments shorter)
 Storage to store experiments results and retrieve in case of loss of data on cc and cg servers
-
-```py
-  check_load_test('video', 'image', '/home/cc/ipa-private/pipelines/mlserver-final/video/seldon-core-version/nodes/yolo', 'yolo')
-```
